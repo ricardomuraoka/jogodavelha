@@ -44,14 +44,10 @@ class JogoDaVelha {
             this.jogada = "X";
             this.salvar(i);
             this.tabuleiro[i] = this.jogada;
-            if (this.finalDeJogo()) {
-                return;
-            } else {
-                this.proximaJogada();
-                r = this.turnoComputador();
-                this.salvar(r);
-                this.tabuleiro[r] = this.jogada;
-            }
+            this.proximaJogada();
+            r = this.turnoComputador();
+            this.salvar(r);
+            this.tabuleiro[r] = this.jogada;
         }
     }
 
@@ -171,7 +167,8 @@ class JogoDaVelhaView {
                 quadrado.classList.add("vencedor");
             }
 
-            if (deuVelha === false && vitoria && vitoria.includes(i)) {
+            if (!jogo.tabuleiro.includes("😑") && deuVelha === false && vitoria && vitoria.includes(i)) {
+                console.log(jogo.tabuleiro)
                 jogadorVencedor.innerHTML = `<h3>O jogador ${jogo.jogada} venceu!</h3>`;
             }
 
