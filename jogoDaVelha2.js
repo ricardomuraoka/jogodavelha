@@ -179,17 +179,13 @@ class JogoDaVelhaView {
     }
 
     atualizaTurno(jogo) {
-        let jogador1 = document.querySelector("#x");
-        let jogador2 = document.querySelector("#o");
+        document.querySelector("#x").style.backgroundColor = "white";
+        document.querySelector("#o").style.backgroundColor = "white";
 
-        jogador1.classList.remove('active');
-        jogador2.classList.remove('active')
-
-
-        if (jogo.jogada === "X") {
-            jogador1.classList.add('active')
+        if (jogo.jogada === "O") {
+            document.querySelector("#x").style.backgroundColor = "khaki";
         } else {
-            jogador2.classList.add('active')
+            document.querySelector("#o").style.backgroundColor = "lightblue";
         }
     }
 }
