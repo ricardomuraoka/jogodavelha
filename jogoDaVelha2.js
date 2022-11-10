@@ -218,6 +218,8 @@ let tipoJogo = true; // true = 1 jogador, false = 2 jogadores (Permite acompanha
 document.querySelector("#iniciaJogo")
     .addEventListener("click", () => {
         novoJogo();
+        document.querySelector("#x").style.backgroundColor = "khaki";
+        document.querySelector("#o").style.backgroundColor = "white";
         tipoJogo = true;
         const jogadorVencedor = document.querySelector("#jogador-vencedor");
         jogadorVencedor.innerHTML = `<h3 class=""></h3>`;
@@ -227,6 +229,8 @@ document.querySelector("#iniciaJogo")
 document.querySelector("#iniciaJogoIA")
     .addEventListener("click", () => {
         novoJogo();
+        document.querySelector("#x").style.backgroundColor = "khaki";
+        document.querySelector("#o").style.backgroundColor = "white";
         tipoJogo = false;
         const jogadorVencedor = document.querySelector("#jogador-vencedor");
         jogadorVencedor.innerHTML = `<h3 class=""></h3>`;
