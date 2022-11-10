@@ -45,9 +45,13 @@ class JogoDaVelha {
             this.salvar(i);
             this.tabuleiro[i] = this.jogada;
             this.proximaJogada();
-            r = this.turnoComputador();
-            this.salvar(r);
-            this.tabuleiro[r] = this.jogada;
+            if (this.finalDeJogo() || this.deuVelha()) {
+                return;
+            } else{
+                r = this.turnoComputador();
+                this.salvar(r);
+                this.tabuleiro[r] = this.jogada;
+            }
         }
     }
 
