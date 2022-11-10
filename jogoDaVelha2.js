@@ -168,7 +168,6 @@ class JogoDaVelhaView {
             }
 
             if (!jogo.tabuleiro.includes("😑") && deuVelha === false && vitoria && vitoria.includes(i)) {
-                console.log(jogo.tabuleiro)
                 jogadorVencedor.innerHTML = `<h3>O jogador ${jogo.jogada} venceu!</h3>`;
             }
 
