@@ -1,29 +1,272 @@
-/* Regras
-A cada rodada, imprima o tabuleiro e pergunte a posição que o jogador deseja jogar
-No final do jogo, deve indicar qual jogador ganhou ou se deu velha
-Adicionais (opcional)
+class JogoDaVelha {
+    tabuleiro;
+    jogada;
+    estado;
 
-Permita que o jogador possa "voltar atrás" em qualquer número de jogadas
-Permita também o modo jogador vs. computador */
+    constructor() {
+        this.tabuleiro = new Array(9).fill(null);
+        this.jogada = "X";
+        this.estado = [];
+    }
 
-let jogoDaVelha = new Array(9).fill(null)
-const i = 0;
+    // Alterna entre jogador X e jogador O
+    proximaJogada() {
+        this.jogada === "X" ? this.jogada = "O" : this.jogada = "X";
+    }
 
-function imprimeJogo() {
-    console.log("DIGITE O NUMERO PARA SELECIONAR SUA JOGADA")
-    console.log("  1  " + ' | ' + "  2  " + ' | ' + "  3  ");
-    console.log("  4  " + ' | ' + "  5  " + ' | ' + "  6  ");
-    console.log("  7  " + ' | ' + "  8  " + ' | ' + "  9  ");
+    turnoComputador() {
+        if (this.deuVelha()) {
+            return;
+        }
+        let jogadaComputador = Math.floor(Math.random() * 9);
+        if (this.tabuleiro[jogadaComputador] !== "X" && this.tabuleiro[jogadaComputador] !== "O") {
+            return jogadaComputador;
+        } else {
+            jogadaComputador = this.turnoComputador();
+        }
+        return jogadaComputador;
+    }
+
+    // Imprime o quadrado do jogo da velha
+    fazerJogada(i) {
+        let r;
+        if (this.finalDeJogo() || (this.tabuleiro[i] === "X" || this.tabuleiro[i] === "O")) {
+            this.proximaJogada();
+            return;
+        }
+        if (tipoJogo === true) {
+            this.tabuleiro[i] = this.jogada;
+        } else {
+            this.jogada = "X";
+            this.salvar(i);
+            this.tabuleiro[i] = this.jogada;
+            this.proximaJogada();
+            if (this.finalDeJogo() || this.deuVelha()) {} else{
+                r = this.turnoComputador();
+                this.salvar(r);
+                this.tabuleiro[r] = this.jogada;
+            }
+        }
+    }
+
+    deuVelha() {
+        return !jogo.tabuleiro.includes(null) && !jogo.finalDeJogo() &&
+            !isEqual([null, null, null, null, null, null, null, null, null], jogo.tabuleiro);
+    }
+
+    // Verifica se há um vencedor, e caso haja, retorna o vencedor.
+    designarVencedor() {
+        const jogadasVitoria = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
+        ]
+
+        for (const vitoria of jogadasVitoria) {
+            const [x, y, z] = vitoria;
+            if (this.tabuleiro[x] &&
+                (this.tabuleiro[x] === this.tabuleiro[y] && this.tabuleiro[x] === this.tabuleiro[z])) {
+                return vitoria;
+            }
+        }
+        return null;
+    }
+
+    // Retorna true caso haja um vencedor, false caso contrário.
+    finalDeJogo() {
+        let jogadasVitoria = this.designarVencedor();
+        return !!jogadasVitoria;
+    }
+
+    // Salva o estado atual do jogo, para que seja possível retornar jogadas.
+    salvar(i) {
+        if (this.tabuleiro[i] === "X" || this.tabuleiro[i] === "O") {
+            return;
+        }
+        const clone = structuredClone(jogo)
+        this.estado.push(clone.tabuleiro);
+    }
 }
 
-let player1 = {
-    jogada: "X"
+// Gera a interação do nosso jogo em uma view visualizável.
+class JogoDaVelhaView {
+    constructor() {
+    }
+
+    atualizaJogo(jogo) {
+        const deuVelha = jogo.deuVelha();
+        if (jogo.deuVelha()) {
+            jogo.tabuleiro.fill("😑");
+        }
+
+        this.atualizaTurno(jogo);
+        const vitoria = jogo.designarVencedor();
+        for (let i = 0; i < jogo.tabuleiro.length; i++) {
+            const quadrado = document.querySelector(`.quadrado[data-index='${i}']`)
+            const jogadorVencedor = document.querySelector("#jogador-vencedor");
+
+
+            if (quadrado !== null) {
+                quadrado.classList.remove("vencedor");
+            } else {
+                continue;
+            }
+
+
+            if (!vitoria && deuVelha) {
+                jogadorVencedor.innerHTML = `<h3 class=""></h3>`;
+            }
+
+
+            let estiloQuadrado = jogo.tabuleiro[i] === 'X' ? "x" : "o";
+            quadrado.innerHTML = `<span class="${estiloQuadrado}">${jogo.tabuleiro[i] ? jogo.tabuleiro[i] : ""}</span>`
+
+            if (vitoria && vitoria.includes(i)) {
+                quadrado.classList.add("vencedor");
+            }
+
+            if (!jogo.tabuleiro.includes("😑") && deuVelha === false && vitoria && vitoria.includes(i)) {
+                jogadorVencedor.innerHTML = `<h3>O jogador ${jogo.jogada} venceu!</h3>`;
+            }
+
+            if (deuVelha) {
+                jogadorVencedor.innerHTML = `<h3>Deu velha!</h3>`;
+            }
+        }
+    }
+
+    atualizaTurno(jogo) {
+        document.querySelector("#x").style.backgroundColor = "white";
+        document.querySelector("#o").style.backgroundColor = "white";
+
+        if (jogo.deuVelha() || jogo.designarVencedor() !== null) {
+            document.querySelector("#x").style.backgroundColor = "white";
+            document.querySelector("#o").style.backgroundColor = "white";
+        } else if (jogo.jogada === "O") {
+            document.querySelector("#x").style.backgroundColor = "khaki";
+        } else if (jogo.jogada === "X") {
+            document.querySelector("#o").style.backgroundColor = "lightblue";
+        }
+    }
+
+    voltarJogada() {
+        const jogadorVencedor = document.querySelector("#jogador-vencedor");
+        jogadorVencedor.innerHTML = `<h3 class=""></h3>`;
+        if (isEqual(jogo.tabuleiro, [null, null, null, null, null, null, null, null, null])) {
+            jogadorVencedor.innerHTML = `<h3 class="">Não há jogadas para voltar</h3>`;
+            return;
+        }
+
+        if (jogo.estado.length === 0) {
+            jogo.tabuleiro = new Array(9).fill(null);
+            return;
+        }
+
+        if (tipoJogo === true) {
+            jogo.tabuleiro = jogo.estado[jogo.estado.length - 1];
+            jogo.estado.pop();
+            jogo.proximaJogada();
+            return jogo;
+        } else {
+            let quantidadeNulos = jogo.tabuleiro.filter(x => x === null).length;
+            if (quantidadeNulos % 2 === 0) {
+                jogo.estado.pop();
+                jogo.tabuleiro = jogo.estado[jogo.estado.length - 1];
+                return jogo;
+            } else {
+                jogo.estado.pop();
+                jogo.tabuleiro = jogo.estado[jogo.estado.length - 1];
+                jogo.estado.pop();
+                jogo.tabuleiro = jogo.estado[jogo.estado.length - 1];
+                jogo.estado.pop();
+                return jogo;
+            }
+        }
+    }
 }
 
-let player2 = {
-    jogada: "O"
+function adicionarJogada(i) {
+    jogo.salvar(i);
+    jogo.fazerJogada(i);
+    jogoView.atualizaJogo(jogo);
+    jogo.proximaJogada();
 }
 
-imprimeJogo();
+function voltar() {
+    jogoView.voltarJogada();
+    jogoView.atualizaJogo(jogo);
+}
 
+function novoJogo() {
+    jogo = new JogoDaVelha();
+    jogoView.atualizaJogo(jogo);
+}
 
+let jogo = new JogoDaVelha(); // Instancia um novo jogo.
+let jogoView = new JogoDaVelhaView(); // Instancia a view do jogo.
+let tipoJogo = true; // true = 1 jogador, false = 2 jogadores (Permite acompanhar o tipo de jogo)
+
+// Adiciona os eventos de click para iniciar um novo jogo modo 2 jogadores.
+document.querySelector("#iniciaJogo")
+    .addEventListener("click", () => {
+        novoJogo();
+        document.querySelector("#x").style.backgroundColor = "khaki";
+        document.querySelector("#o").style.backgroundColor = "white";
+        tipoJogo = true;
+        const jogadorVencedor = document.querySelector("#jogador-vencedor");
+        jogadorVencedor.innerHTML = `<h3 class=""></h3>`;
+    })
+
+// Adiciona os eventos de click para iniciar um novo jogo modo 1 jogador.
+document.querySelector("#iniciaJogoIA")
+    .addEventListener("click", () => {
+        novoJogo();
+        document.querySelector("#x").style.backgroundColor = "khaki";
+        document.querySelector("#o").style.backgroundColor = "white";
+        tipoJogo = false;
+        const jogadorVencedor = document.querySelector("#jogador-vencedor");
+        jogadorVencedor.innerHTML = `<h3 class=""></h3>`;
+    })
+
+// Adiciona os eventos de click para voltar uma jogada.
+document.querySelector("#voltar")
+    .addEventListener("click", () => {
+        voltar();
+    })
+
+// Visão geral do tabuleiro (que dividem a classe "quadrado").
+let quadrados = document.querySelectorAll(".quadrado");
+
+// Adiciona os eventos de click para cada quadrado do tabuleiro.
+if (tipoJogo) {
+    quadrados.forEach((quadrado) => {
+        quadrado.addEventListener("click", () => {
+            adicionarJogada(quadrado.dataset.index);
+            const jogadorVencedor = document.querySelector("#jogador-vencedor");
+            jogadorVencedor.innerHTML = `<h3 class=""></h3>`;
+        })
+    })
+} else {
+    quadrados.forEach((quadrado) => {
+        quadrado.addEventListener("click", () => {
+            adicionarJogada(quadrado.dataset.index);
+        })
+    })
+}
+
+// Permite definir se o tabuleiro é igual aos jogos salvos.
+function isEqual(a, b) {
+    if (a.length !== b.length)
+        return false;
+    else {
+        for (let i = 0; i < a.length; i++)
+            if (a[i] !== b[i])
+                return false;
+        return true;
+    }
+}
